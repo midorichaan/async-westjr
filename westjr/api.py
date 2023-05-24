@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import TypeVar
 
-import requests
+import aiohttp
 from pydantic import BaseModel
 
 from .const import AREAS, LINES, STATIONS, STOP_TRAINS
@@ -20,14 +20,32 @@ _TModel = TypeVar("_TModel", bound=BaseModel)
 
 
 class WestJR:
-    def __init__(self, line: str | None = None, area: str | None = None) -> None:
+    def __init__(
+            self, line: str | None = None, area: str | None = None, session: aiohttp.ClientSession | None = None
+    ) -> None:
         self.uri_suffix = "https://www.train-guide.westjr.co.jp/api/v3/"
         self.line = line
         self.area = area
         self.areas = AREAS
         self.lines = LINES
 
-    def _request(
+        self.session = session
+        if not session:
+            self._create_session()
+
+    def _create_session(self) -> None:
+        if self.session is None:
+            self.session = aiohttp.ClientSession()
+        if self.session.closed:
+            self.session = aiohttp.ClientSession()
+
+    async def close(self) -> None:
+        if not self.session:
+            return
+        if not self.session.closed:
+            await self.session.close()
+
+    async def _request(
         self,
         *,
         endpoint: str,
@@ -36,14 +54,20 @@ class WestJR:
     ) -> _TModel:
         uri = f"{self.uri_suffix}{endpoint}.json"
 
+        if not self.session:
+            self._create_session()
+
         if method == "GET":
-            res = requests.get(url=uri)
             try:
-                res.raise_for_status()
-            except requests.RequestException as e:
-                print(e)
-                raise e
-            return model.parse_obj(res.json())
+                async with self.session.request(
+                    "GET", uri
+                ) as res:
+                    res.raise_for_status()
+                    data = await res.json()
+            except aiohttp.ClientConnectorError as exc:
+                raise exc
+
+            return model.parse_obj(data)
         else:
             raise NotImplementedError(method)
 
