@@ -2,10 +2,10 @@
 
 ![Python Versions](https://img.shields.io/pypi/pyversions/WestJR.svg)
 ![PyPI](https://badge.fury.io/py/WestJR.svg)
-[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/unyacat/westjr/master.svg)](https://results.pre-commit.ci/latest/github/unyacat/westjr/master)
-![GitHubActions](https://github.com/unyacat/westjr/workflows/Test/badge.svg)
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/midorichaan/async-westjr/master.svg)](https://results.pre-commit.ci/latest/github/midorichaan/async-westjr/master)
+![GitHubActions](https://github.com/midorichaan/async-westjr/workflows/Test/badge.svg)
 
-JR西日本列車走行位置 非公式API Pythonライブラリ
+JR西日本列車走行位置 非公式API Async-Pythonライブラリ
 
 * 列車走行位置取得 (`/api/v3/{LINE}.json`)
 * メンテナンス予定取得 (`/api/v3/area_{AREA}_maintenance.json`)
@@ -22,12 +22,10 @@ JR西日本列車走行位置 非公式API Pythonライブラリ
 ## Installation
 
 ```bash
-pip install WestJR
+pip install async-westjr
 ```
 
 ## Usage
-
-[Wiki](https://github.com/unyacat/westjr/wiki) に情報があります．
 
 ```python
 import westjr
@@ -42,14 +40,22 @@ jr = westjr.WestJR(line="kobesanyo", area="kinki")
 #### 列車走行位置取得
 
 ```python
-print(jr.get_trains())
+async def get_trains():
+    data = await jr.get_trains()
+    print(data)
+
+await get_trains()
 # TrainPos(update='2023-03-21T16:54:54.612Z', trains=[TrainsItem(no='502C', ...
 ```
 
 #### メンテナンス予定取得
 
 ```python
-print(jr.get_maintenance())
+async def get_maintenance():
+    data = await jr.get_maintenance()
+    print(data)
+
+await get_maintenance()
 # 平常時:
 # AreaMaintenance(status=0, notification=Notification(groupId=0, text='', duration=''), ...
 # 異常時:
@@ -59,21 +65,33 @@ print(jr.get_maintenance())
 #### 路線一覧取得
 
 ```python
-print(jr.get_lines())
+async def get_lines():
+    data = await jr.get_lines()
+    print(data)
+
+await get_lines()
 # AreaMaster(lines={'ako': Line(name='赤穂線', range='相生〜播州赤穂', relatelines=None, st='...
 ```
 
 #### 駅一覧取得
 
 ```python
-print(jr.get_stations())
+async def get_stations():
+    data = await jr.get_stations()
+    print(data)
+
+await get_stations()
 # Stations(stations=[StationsItem(info=Info(name='新大阪', code='0415', stopTrains=[1, 2, 5], typeNotice=None, ...
 ```
 
 #### 運行情報取得
 
 ```Python
-print(jr.get_traffic_info())
+async def get_traffic_info():
+    data = await jr.get_traffic_info()
+    print(data)
+
+await get_traffic_info()
 # 平常時:
 # TrainInfo(lines={}, express={})
 # 異常時:
@@ -97,34 +115,39 @@ print(jr.lines)
 #### 列車環境取得
 
 ```python
-print(jr.get_train_monitor_info().trains["3489M"][0].cars[0].congestion)
-# 26(%)
-print(jr.get_train_monitor_info().trains["3489M"][0].cars[0].temp)
-# 23(°C)
+async def get_train_monitor_info():
+    congestion = (await jr.get_train_monitor_info()).trains["3489M"][0].cars[0].congestion
+    print(congestion)
+    # 26(%)
+    temp = (await jr.get_train_monitor_info()).trains["3489M"][0].cars[0].temp
+    print(temp)
+    # 23(°C)
 ```
 
 #### 駅に停車する種別を id から名称に変換する
 
 ```python
-station = jr.get_stations(line="kyoto").stations[0]
+async def get_train_monitor_info():
+    station = (await jr.get_stations(line="kyoto")).stations[0]
 
-print(station.info.name)
-# 山科
+    print(station.info.name)
+    # 山科
 
-print(jr.convert_stopTrains(station.info.stopTrains))
-# ['新快速', '快速', '特急']
+    print(jr.convert_stopTrains(station.info.stopTrains))
+    # ['新快速', '快速', '特急']
 ```
 
 #### 列車走行位置の場所を前駅と次駅の名前に変換する
 
 ```python
-train = jr.get_trains(line="kobesanyo").trains
-tr = train[0]
-prev, next = jr.convert_pos(train=tr)
-print(prev)
-# 塚本
+async def get_convert_pos():
+    train = (await jr.get_trains(line="kobesanyo")).trains
+    tr = train[0]
+    prev, next = jr.convert_pos(train=tr)
+    print(prev)
+    # 塚本
 ```
 
 ## Contribution
 
-* develop ブランチにお願いします
+* PRを出してください
