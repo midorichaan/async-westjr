@@ -1,7 +1,7 @@
 import asyncio
-import westjr
+import async_westjr
 
-jr = westjr.WestJR(line="kobesanyo", area="kinki")
+jr = async_westjr.WestJR(line="kobesanyo", area="kinki")
 loop = asyncio.get_event_loop()
 
 
@@ -76,6 +76,6 @@ async def convertTrains():
 async def convertPos():
     train = (await jr.get_trains(line="kobesanyo")).trains
     tr = train[0]
-    prev, next = jr.convert_pos(train=tr)
+    prev, next_st = jr.convert_pos(train=tr)
     print(prev)
     # 例: 塚本

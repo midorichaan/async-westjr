@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TypeVar
+from typing import Coroutine, TypeVar
 
 import aiohttp
 from pydantic import BaseModel
@@ -71,7 +71,7 @@ class WestJR:
         else:
             raise NotImplementedError(method)
 
-    def get_lines(self, area: str | None = None) -> AreaMaster:
+    def get_lines(self, area: str | None = None) -> Coroutine:
         """
         広域エリアに属する路線一覧を取得して返す．
         該当API例: https://www.train-guide.westjr.co.jp/api/v3/area_kinki_master.json
@@ -85,7 +85,7 @@ class WestJR:
 
         return self._request(endpoint=endpoint, model=AreaMaster)
 
-    def get_stations(self, line: str | None = None) -> Stations:
+    def get_stations(self, line: str | None = None) -> Coroutine:
         """
         路線に所属している駅名一覧を取得して返す．
         :param line: [必須] 路線名(ex. kobesanyo)
@@ -98,7 +98,7 @@ class WestJR:
 
         return self._request(endpoint=endpoint, model=Stations)
 
-    def get_trains(self, line: str | None = None) -> TrainPos:
+    def get_trains(self, line: str | None = None) -> Coroutine:
         """
         列車走行位置を取得して返す．
         :param line: [必須] 路線名(ex. kobesanyo)
@@ -110,7 +110,7 @@ class WestJR:
 
         return self._request(endpoint=_line, model=TrainPos)
 
-    def get_maintenance(self, area: str | None = None) -> AreaMaintenance:
+    def get_maintenance(self, area: str | None = None) -> Coroutine:
         """
         メンテナンス予定を取得して返す．大雪などで運休が予定されているときのみ情報が載る．
         :param area: [必須] 広域エリア名(ex. kinki)
@@ -123,7 +123,7 @@ class WestJR:
 
         return self._request(endpoint=endpoint, model=AreaMaintenance)
 
-    def get_traffic_info(self, area: str | None = None) -> TrainInfo:
+    def get_traffic_info(self, area: str | None = None) -> Coroutine:
         """
         路線の交通情報を取得して返す．問題が発生しているときのみ情報が載る．
         :param area: [必須] 広域エリア名(ex. kinki)
@@ -136,7 +136,7 @@ class WestJR:
 
         return self._request(endpoint=endpoint, model=TrainInfo)
 
-    def get_train_monitor_info(self) -> TrainMonitorInfo:
+    def get_train_monitor_info(self) -> Coroutine:
         """
         列車の環境を取得して返す．
         :return: dict

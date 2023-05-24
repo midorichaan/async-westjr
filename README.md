@@ -28,11 +28,11 @@ pip install async-westjr
 ## Usage
 
 ```python
-import westjr
-jr = westjr.WestJR()
+import async_westjr
+jr = async_westjr.WestJR()
 
 # あらかじめ area や line をセットする
-jr = westjr.WestJR(line="kobesanyo", area="kinki")
+jr = async_westjr.WestJR(line="kobesanyo", area="kinki")
 ```
 
 ### Example
